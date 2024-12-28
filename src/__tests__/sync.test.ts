@@ -37,12 +37,14 @@ jest.mock("svix", () => ({
 const prisma = new PrismaClient();
 
 describe("Webhook Handler", () => {
-  beforeAll(async () => {
-    // Clear the User table to ensure a clean slate for tests
-    await prisma.user.deleteMany();
+  beforeEach(async () => {
+    // Ensure the test user does not already exist
+    await prisma.user.deleteMany({ where: { id: "test-user-id" } });
   });
 
   afterAll(async () => {
+    // Clean up test data
+    await prisma.user.deleteMany({ where: { id: "test-user-id" } });
     // Disconnect Prisma after tests to prevent memory leaks
     await prisma.$disconnect();
   });
