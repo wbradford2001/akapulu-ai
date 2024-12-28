@@ -8,75 +8,95 @@ datasource db {
 }
 
 model User {
-  id                String       @id @default(uuid())
-  firstName         String
-  lastName          String
-  email             String       @unique
-  company           String?
-  subscription      Subscription?
-  subscriptionId    String
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  images            Image[]
-  payments          Payment[]
-  billingDetails    BillingDetails?
+  id             String          @id
+  firstName      String
+  lastName       String
+  username       String          @unique
+  email          String          @unique
+  company        String?
+  credits        Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  images         UserToImage[]
+  payments       Payment[]
+  billingDetails BillingDetails?
+  followers      Follow[]        @relation("UserFollowers") // No fields/references here
+  following      Follow[]        @relation("UserFollowing") // No fields/references here
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("UserFollowers", fields: [followerId], references: [id])
+  following User @relation("UserFollowing", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId])
 }
 
 model Plan {
-  id                String       @id @default(uuid())
-  name              String
-  monthlyCost       Float
-  maxImagesPerMonth Int
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  subscriptions     Subscription[]
+  id            String   @id @default(uuid())
+  name          String
+  costPerCredit Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model UserToImage {
+  id             String   @id @default(uuid())
+  userId         String
+  imageId        String
+  prompt         String
+  negativePrompt String?
+  guidanceScale  Float
+  steps          Int
+  createdAt      DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  image Image @relation(fields: [imageId], references: [id])
 }
 
 model Image {
-  id                String       @id @default(uuid())
-  userId            String
-  user              User         @relation(fields: [userId], references: [id])
-  url               String
-  prompt            String
-  negativePrompt    String?
-  guidanceScale     Float
-  steps             Int
-  initialImageUrl   String?
-  createdAt         DateTime     @default(now())
+  id             String   @id @default(uuid())
+  categoryId     String?
+  url            String
+  completionTime Float
+  createdAt      DateTime @default(now())
+
+  category     Category?     @relation(fields: [categoryId], references: [id])
+  userToImages UserToImage[]
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  images    Image[]
 }
 
 model Payment {
-  id                String       @id @default(uuid())
-  userId            String
-  user              User         @relation(fields: [userId], references: [id])
-  amount            Float
-  currency          String
-  status            String
-  createdAt         DateTime     @default(now())
+  id               String   @id @default(uuid())
+  userId           String
+  amount           Float
+  currency         String
+  creditsPurchased Int
+  status           String
+  createdAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id]) // Relation fixed
 }
 
 model BillingDetails {
-  id                String       @id @default(uuid())
-  userId            String       @unique
-  user              User         @relation(fields: [userId], references: [id])
-  cardType          String
-  cardLastFour      String
-  billingAddress    String
-  nextBillingDate   DateTime
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-}
-
-model Subscription {
-  id                String       @id @default(uuid())
-  userId            String       @unique
-  user              User         @relation(fields: [userId], references: [id])
-  planId            String
-  plan              Plan         @relation(fields: [planId], references: [id])
-  status            String
-  imagesGeneratedThisMonth Int
-  billingCycleStart DateTime
-  billingCycleEnd   DateTime
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  cardType        String
+  cardLastFour    String
+  billingAddress  String
+  nextBillingDate DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
