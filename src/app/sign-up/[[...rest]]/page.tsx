@@ -1,5 +1,16 @@
-import SignUpComponent from "../../../components/SignUpComponent";
+import { SignUp } from "@clerk/nextjs";
 
 export default function SignUpPage() {
-  return <SignUpComponent />;
+  return (
+    <SignUp
+      path="/sign-up"
+      routing="path"
+      signInUrl="/sign-in"
+      appearance={{
+        layout: {
+          socialButtonsPlacement: "bottom",
+        },
+      }}
+    />
+  );
 }
