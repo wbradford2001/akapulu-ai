@@ -1,7 +1,6 @@
 import handler from "../pages/api/user/sync";
 import { createMocks } from "node-mocks-http";
 import { PrismaClient } from "@prisma/client";
-import { Webhook } from "svix";
 
 // Mock the Webhook class
 jest.mock("svix", () => ({
