@@ -17,7 +17,6 @@ jest.mock("svix", () => ({
               email_addresses: [{ email_address: "test@example.com" }],
               first_name: "Test",
               last_name: "User",
-              username: "testuser",
             },
           };
         }
@@ -58,7 +57,6 @@ describe("Webhook Handler", () => {
         email_addresses: [{ email_address: "test@example.com" }],
         first_name: "Test",
         last_name: "User",
-        username: "testuser",
       },
     };
 
@@ -89,7 +87,7 @@ describe("Webhook Handler", () => {
       email: "test@example.com",
       firstName: "Test",
       lastName: "User",
-      username: "testuser",
+      username: "test", // Username derived from email
       credits: 0,
     });
 

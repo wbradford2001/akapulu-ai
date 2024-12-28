@@ -59,29 +59,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Handle different event types
   if (evt.type === "user.created") {
     const user = evt.data;
-    const { id, email_addresses, first_name, last_name, username } = user;
-
-    console.log("Processing user.created event for user:", { id, first_name, last_name, username });
-
+    const { id, email_addresses, first_name, last_name } = user;
+  
+    const email = email_addresses[0]?.email_address || "";
+    const username = email.split("@")[0]; // Default username
+  
     const userExists = await prisma.user.findUnique({ where: { id } });
-
+  
     if (!userExists) {
-      console.log("User does not exist. Creating user...");
       await prisma.user.create({
         data: {
           id,
           firstName: first_name || "",
           lastName: last_name || "",
-          email: email_addresses[0]?.email_address || "",
-          username: username || "",
+          email,
+          username, 
           credits: 0,
         },
       });
-      console.log("User created successfully:", { id });
-    } else {
-      console.log("User already exists:", { id });
     }
-  } else if (evt.type === "user.deleted") {
+  }
+   else if (evt.type === "user.deleted") {
     const user = evt.data;
     const { id } = user;
 
