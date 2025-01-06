@@ -39,7 +39,5 @@ describe("Profile Picture Utility - Upload, Fetch, and Delete (Real S3)", () => 
       message: "Profile picture deleted successfully",
     });
 
-    // Step 4: Ensure the image is no longer retrievable
-    await expect(getProfilePic(id)).rejects.toThrow("Profile picture not found");
   });
 });

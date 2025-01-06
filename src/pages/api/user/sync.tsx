@@ -37,6 +37,7 @@ export default async function syncHandler(req: NextApiRequest, res: NextApiRespo
       "svix-signature": svix_signature,
     }) as WebhookEvent;
   } catch (err) {
+    console.log(err)
     return res.status(400).json({ error: "Webhook verification failed" });
   }
 

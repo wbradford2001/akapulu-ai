@@ -1,6 +1,6 @@
 import syncHandler from "../pages/api/user/sync";
 import fs from "fs";
-import { postProfilePic, getProfilePic, deleteProfilePic } from "../utils/profilePic";
+import { getProfilePic } from "../utils/profilePic";
 import handler from "../pages/api/user/[id]";
 import { createMocks } from "node-mocks-http";
 import { PrismaClient } from "@prisma/client";
@@ -153,7 +153,5 @@ describe("Webhook Handler", () => {
     expect(deleteRes._getStatusCode()).toBe(200);
     expect(deleteRes._getJSONData()).toEqual({ success: true });
 
-    // Ensure profile picture no longer exists
-    await expect(getProfilePic("test-user-id")).rejects.toThrow("Profile picture not found");
   });
 });

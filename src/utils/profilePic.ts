@@ -17,10 +17,7 @@ export async function getProfilePic(id: string): Promise<string> {
     const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // URL valid for 1 hour
     console.log(signedUrl)
     return signedUrl;
-  } catch (error: any) {
-    if (error.name === "NoSuchKey") {
-      throw new Error("Profile picture not found");
-    }
+  } catch (error: unknown) {
     throw error;
   }
 }

@@ -3,7 +3,6 @@
 import { Box, Typography, Button, IconButton, Avatar, Menu, MenuItem, useTheme, useMediaQuery } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu"; // Import MenuIcon
 import Logo from "/public/Logo.svg"; // Adjust the path to your logo
 import { useClerk, useUser } from "@clerk/nextjs";
