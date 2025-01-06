@@ -81,8 +81,6 @@ describe("Webhook Handler", () => {
   });
 
   it("should handle user creation, fetch profile picture, and deletion events", async () => {
-    const testImagePath = path.join(process.cwd(), "public", "test-image.jpg");
-    const testImageBuffer = fs.readFileSync(testImagePath);
 
     // Simulate user creation webhook
     const createPayload = {
