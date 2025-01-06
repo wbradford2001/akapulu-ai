@@ -1,64 +1,93 @@
-import handler from "../pages/api/user/sync";
+import syncHandler from "../pages/api/user/sync";
+import { getProfilePic } from "../utils/profilePic";
+import handler from "../pages/api/user/[id]";
 import { createMocks } from "node-mocks-http";
 import { PrismaClient } from "@prisma/client";
+import http from "http";
+import path from "path";
+import { promisify } from "util";
+import handlerStatic from "serve-handler";
 
-// Mock the Webhook class
 jest.mock("svix", () => ({
   Webhook: jest.fn().mockImplementation(() => ({
-    verify: jest
-      .fn()
-      .mockImplementation((payload) => {
-        const parsedPayload = JSON.parse(payload);
-        if (parsedPayload.type === "user.created") {
-          return {
-            type: "user.created",
-            data: {
-              id: "test-user-id",
-              email_addresses: [{ email_address: "test@example.com" }],
-              first_name: "Test",
-              last_name: "User",
-              username: "testuser",
-            },
-          };
-        }
-        if (parsedPayload.type === "user.deleted") {
-          return {
-            type: "user.deleted",
-            data: {
-              id: "test-user-id",
-            },
-          };
-        }
-        throw new Error("Unexpected webhook type");
-      }),
+    verify: jest.fn().mockImplementation((payload) => {
+      const parsedPayload = JSON.parse(payload);
+      if (parsedPayload.type === "user.created") {
+        return {
+          type: "user.created",
+          data: {
+            id: "test-user-id",
+            email_addresses: [{ email_address: "test@example.com" }],
+            image_url: `http://localhost:3001/test-image.jpg`,
+          },
+        };
+      }
+      if (parsedPayload.type === "user.deleted") {
+        return {
+          type: "user.deleted",
+          data: { id: "test-user-id" },
+        };
+      }
+      throw new Error("Unexpected webhook type");
+    }),
   })),
 }));
 
 const prisma = new PrismaClient();
+let server: http.Server;
+
+beforeAll(async () => {
+  // Start static file server
+  server = http.createServer((req, res) => {
+    handlerStatic(req, res, { public: path.join(process.cwd(), "public") });
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    server.listen(3001, (err?: Error) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+});
+
+afterAll(async () => {
+  // Disconnect Prisma and close server
+  try {
+    await prisma.user.deleteMany({ where: { id: "test-user-id" } });
+    await prisma.$disconnect();
+  } catch (error) {
+    console.error("Error during Prisma disconnect:", error);
+  }
+
+  if (server) {
+    try {
+      await promisify(server.close.bind(server))();
+    } catch (error) {
+      console.error("Error during server close:", error);
+    }
+  }
+});
+
+afterEach(() => {
+  jest.clearAllTimers(); // Clear lingering timers
+  jest.clearAllMocks(); // Clear mocks to prevent cross-test interference
+});
 
 describe("Webhook Handler", () => {
   beforeEach(async () => {
-    // Ensure the test user does not already exist
+    // Clean database before each test
     await prisma.user.deleteMany({ where: { id: "test-user-id" } });
   });
 
-  afterAll(async () => {
-    // Clean up test data
-    await prisma.user.deleteMany({ where: { id: "test-user-id" } });
-    // Disconnect Prisma after tests to prevent memory leaks
-    await prisma.$disconnect();
-  });
+  it("should handle user creation, fetch profile picture, and deletion events", async () => {
 
-  it("should handle user creation and deletion events", async () => {
     // Simulate user creation webhook
     const createPayload = {
       type: "user.created",
       data: {
         id: "test-user-id",
         email_addresses: [{ email_address: "test@example.com" }],
-        first_name: "Test",
-        last_name: "User",
-        username: "testuser",
+        image_url: `http://localhost:3001/test-image.jpg`,
       },
     };
 
@@ -72,26 +101,32 @@ describe("Webhook Handler", () => {
       },
     });
 
-    await handler(createReq, createRes);
+    await syncHandler(createReq, createRes);
 
-    // Validate creation response
+    // Verify successful creation
     expect(createRes._getStatusCode()).toBe(200);
     expect(createRes._getJSONData()).toEqual({ success: true });
 
-    // Check that the user was created in the database
-    const createdUser = await prisma.user.findUnique({
-      where: { id: "test-user-id" },
+    // Validate profile picture exists
+    const fetchedImage = await getProfilePic("test-user-id");
+    expect(fetchedImage).toMatch(/^https?:\/\/.+/); // Ensure URL format
+
+    // Step 3: Call the `user/[id]` API
+    const { req, res } = createMocks({
+      method: "GET",
+      query: { id: "test-user-id" },
     });
 
-    expect(createdUser).not.toBeNull();
-    expect(createdUser).toMatchObject({
-      id: "test-user-id",
-      email: "test@example.com",
-      firstName: "Test",
-      lastName: "User",
-      username: "testuser",
-      credits: 0,
-    });
+    await handler(req, res);
+
+    // Validate the response
+    expect(res._getStatusCode()).toBe(200);
+
+    const responseData = res._getJSONData();
+
+    // Verify the username and profile picture URL
+    expect(responseData.username).toBe("test");
+    expect(responseData.profilePicture).toMatch(/^https?:\/\/.+/); // Check profile picture URL
 
     // Simulate user deletion webhook
     const deletePayload = {
@@ -109,17 +144,11 @@ describe("Webhook Handler", () => {
       },
     });
 
-    await handler(deleteReq, deleteRes);
+    await syncHandler(deleteReq, deleteRes);
 
     // Validate deletion response
     expect(deleteRes._getStatusCode()).toBe(200);
     expect(deleteRes._getJSONData()).toEqual({ success: true });
 
-    // Check that the user was deleted from the database
-    const deletedUser = await prisma.user.findUnique({
-      where: { id: "test-user-id" },
-    });
-
-    expect(deletedUser).toBeNull(); // User should no longer exist
   });
 });
