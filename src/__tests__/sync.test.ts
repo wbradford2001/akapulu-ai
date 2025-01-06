@@ -1,5 +1,4 @@
 import syncHandler from "../pages/api/user/sync";
-import fs from "fs";
 import { getProfilePic } from "../utils/profilePic";
 import handler from "../pages/api/user/[id]";
 import { createMocks } from "node-mocks-http";
