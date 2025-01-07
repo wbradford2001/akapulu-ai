@@ -1,12 +1,13 @@
 "use client";
 
 import { Box, Typography, Button, IconButton, Avatar, Menu, MenuItem, useTheme, useMediaQuery } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import MenuIcon from "@mui/icons-material/Menu"; // Import MenuIcon
 import Logo from "/public/Logo.svg"; // Adjust the path to your logo
 import { useClerk, useUser } from "@clerk/nextjs";
-import axios from "axios";
+import { useFetchUserData } from "@/utils/useFetchUserData";
+
 
 
 
@@ -18,31 +19,11 @@ export default function TopNavbar({ onHamburgerClick }: { onHamburgerClick: () =
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Detect small screens
     const { signOut } = useClerk();
     const { user } = useUser();
-    const [userData, setUserData] = useState<{ profilePictureUrl: string; username: string } | null>(null);
-    const [retryCount, setRetryCount] = useState(0);
-    const maxRetries = 10;
 
-    useEffect(() => {
-        if (user) {
-            const fetchData = async () => {
-                try {
-                    const response = await axios.get(`/api/user/${user.id}`);
-                    const { username, profilePicture } = response.data;
-                    setUserData({ profilePictureUrl: profilePicture, username });
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
+    const { userData, error } = useFetchUserData(user?.id);
+    console.log(error)
 
-                    // Retry logic
-                    if (retryCount < maxRetries) {
-                        setRetryCount(retryCount + 1);
-                        setTimeout(fetchData, 2000); // Retry after 1 second
-                    }
-                }
-            };
 
-            fetchData();
-        }
-    }, [user, retryCount]);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -53,7 +34,7 @@ export default function TopNavbar({ onHamburgerClick }: { onHamburgerClick: () =
     };
 
     const handleSignOut = () => {
-        signOut()
+        signOut( {redirectUrl: "/" })
     }
 
     return (
