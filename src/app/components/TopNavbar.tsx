@@ -35,6 +35,7 @@ export default function TopNavbar({ onHamburgerClick }: { onHamburgerClick: () =
 
     const handleSignOut = () => {
         signOut( {redirectUrl: "/sign-in" })
+        router.push("/sign-in")
     }
 
     return (

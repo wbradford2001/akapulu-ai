@@ -28,6 +28,7 @@ export default function SideNavbar({
   const handleNavClick = (href: string) => {
     if (href === "/logout"){
         signOut({redirectUrl: "/sign-in" })
+        router.push("/sign-in")
         return
     }
     router.push(href);
