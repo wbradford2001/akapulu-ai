@@ -11,7 +11,7 @@ export function useFetchUserData(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
   const [isRetrying, setIsRetrying] = useState(false); // Indicates retry in progress
   const maxRetries = 10;
-  const retryDelay = 2000; // 2 seconds
+  const retryDelay = 1000; // 2 seconds
 
   useEffect(() => {
     if (!userId) return;
