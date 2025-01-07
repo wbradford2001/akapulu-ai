@@ -7,8 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu"; // Import MenuIcon
 import Logo from "/public/Logo.svg"; // Adjust the path to your logo
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useFetchUserData } from "@/utils/useFetchUserData";
-
-
+import Image from "next/image"; // Import the Image component
 
 
 export default function TopNavbar({ onHamburgerClick }: { onHamburgerClick: () => void }) {
@@ -79,11 +78,13 @@ export default function TopNavbar({ onHamburgerClick }: { onHamburgerClick: () =
                     onClick={() => router.push("/")}
 
                 >
-                    <img
+                    <Image
                         src={Logo.src}
                         alt="Logo"
+                        width={40} // Specify the width
+                        height={40} // Specify the height
                         style={{
-                            height: "40px",
+                            height: "40px", // Inline styles for custom layout
                             marginLeft: isSmallScreen ? "auto" : 0, // Centered logo for small screens
                         }}
                     />
