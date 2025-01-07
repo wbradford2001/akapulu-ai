@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Typography, Button, IconButton, Avatar, Menu, MenuItem, useTheme, useMediaQuery } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import MenuIcon from "@mui/icons-material/Menu"; // Import MenuIcon
 import Logo from "/public/Logo.svg"; // Adjust the path to your logo
@@ -21,6 +21,7 @@ export default function TopNavbar({ onHamburgerClick }: { onHamburgerClick: () =
     const { user } = useUser();
 
     const { userData, error } = useFetchUserData(user?.id);
+    console.log(error)
 
 
 
