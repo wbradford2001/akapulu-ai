@@ -1,0 +1,82 @@
+[
+    {
+      "role": "user",
+      "content": "User said: \"I want to check my account balance.\"\nCompare against these behaviors:\n0: \"ask to check their balance\"\n1: \"ask to transfer funds\"\n2: \"ask to close their account\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "0; 10; The user explicitly mentioned checking their balance, which perfectly matches behavior 0."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"Can I save money on my electricity bill with solar?\"\nCompare against these behaviors:\n0: \"ask about reducing electricity costs\"\n1: \"ask about environmental benefits\"\n2: \"ask about solar panel maintenance\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "0; 9; The user asked about saving money, which aligns closely with behavior 0."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"I forgot my password.\"\nCompare against these behaviors:\n0: \"ask for help with resetting their password\"\n1: \"ask to update their email\"\n2: \"ask to report unauthorized transactions\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "0; 10; The user clearly asked for help with resetting their password, matching behavior 0 exactly."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"What happens if my solar panels stop working?\"\nCompare against these behaviors:\n0: \"ask about panel durability\"\n1: \"ask about warranty coverage\"\n2: \"ask about maintenance services\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "2; 7; The user mentioned their concern about panels not working, which aligns closely with behavior 2."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"Do you have any promotions?\"\nCompare against these behaviors:\n0: \"ask about pricing details\"\n1: \"ask about current promotions\"\n2: \"ask about financing options\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "1; 8; The user explicitly asked about promotions, which matches behavior 1."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"What's the weather like today?\"\nCompare against these behaviors:\n0: \"ask about their account balance\"\n1: \"ask to transfer funds\"\n2: \"ask about loan eligibility\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "none; 8; The user's question about the weather does not align with any of the listed behaviors."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"Can you explain how net metering works?\"\nCompare against these behaviors:\n0: \"ask about energy savings\"\n1: \"ask about government incentives\"\n2: \"ask about how solar panels generate energy\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "none; 7; The user's question about net metering does not match any of the listed behaviors."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"Can I get help transferring money to another account?\"\nCompare against these behaviors:\n0: \"ask to check their balance\"\n1: \"ask to transfer funds\"\n2: \"ask to close their account\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "1; 9; The user asked for help transferring money, which closely matches behavior 1."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"How do I check if my solar panels are producing enough energy?\"\nCompare against these behaviors:\n0: \"ask about energy monitoring\"\n1: \"ask about installation timelines\"\n2: \"ask about panel maintenance\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "0; 9; The user is asking about monitoring energy production, which closely matches behavior 0."
+    },
+    {
+      "role": "user",
+      "content": "User said: \"Can you recommend a solar panel brand?\"\nCompare against these behaviors:\n0: \"ask about financing options\"\n1: \"ask for product recommendations\"\n2: \"ask about maintenance services\"\n"
+    },
+    {
+      "role": "assistant",
+      "content": "1; 8; The user is asking for a recommendation, which aligns with behavior 1."
+    }
+  ]

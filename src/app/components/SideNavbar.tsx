@@ -2,10 +2,12 @@
 
 import { Box, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useTheme, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/navigation";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ImageIcon from "@mui/icons-material/Image";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
+import ForumIcon from '@mui/icons-material/Forum';
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import DescriptionIcon from "@mui/icons-material/Description"; // or another icon of your choice
+
+import HistoryIcon from "@mui/icons-material/History"; // For a "history" look
+
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useClerk } from "@clerk/nextjs";
 
@@ -39,9 +41,9 @@ export default function SideNavbar({
 
 
   const navItems = [
-    { href: "/create", icon: <AddCircleIcon />, label: "Create" },
-    { href: "/my-creations", icon: <ImageIcon />, label: "My Creations" },
-    { href: "/add-credits", icon: <CreditCardIcon />, label: "Add Credits" },
+    { href: "/chat", icon: <ForumIcon />, label: "Chat" },
+    { href: "/chat-history", icon: <HistoryIcon />, label: "Chat History" },
+    { href: "/scripts", icon: <DescriptionIcon />, label: "Scripts" },
   ];
 
   return (

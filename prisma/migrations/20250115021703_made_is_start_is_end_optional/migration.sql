@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "ConversationNode" ALTER COLUMN "isStart" DROP NOT NULL,
+ALTER COLUMN "isEnd" DROP NOT NULL;

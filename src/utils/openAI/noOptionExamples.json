@@ -1,0 +1,82 @@
+[
+    {
+      "role": "user",
+      "content": "The user is supposed to: Ask about fixing their car, user response: 'The weather is nice today.'"
+    },
+    {
+      "role": "assistant",
+      "content": "1; The user was supposed to ask about fixing their car, but instead talked about the weather."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Ask about fixing their car, user response: 'I know about cars.'"
+    },
+    {
+      "role": "assistant",
+      "content": "2; The response mentions 'cars' but does not address the intent of asking to fix the car."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Inquire about available phone plans, user response: 'Do you sell smartphones?'"
+    },
+    {
+      "role": "assistant",
+      "content": "5; The user mentions smartphones, which is somewhat related to inquiring about phone plans but not entirely on topic."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Schedule a follow-up call for a sales inquiry, user response: 'Can I call you back in two hours?'"
+    },
+    {
+      "role": "assistant",
+      "content": "7; The user suggests calling back, which aligns with the intent of scheduling a follow-up, though it could be more specific."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Confirm their phone number for a callback, user response: 'Yes, my number is 555-1234.'"
+    },
+    {
+      "role": "assistant",
+      "content": "10; The user directly confirms their phone number, matching the intent exactly."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Ask about discounts on a product, user response: 'Do you have any promotions right now?'"
+    },
+    {
+      "role": "assistant",
+      "content": "9; The response asks about promotions, which aligns well with the intent of inquiring about discounts."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Request help with troubleshooting a phone issue, user response: 'My phone keeps freezing. Can you help?'"
+    },
+    {
+      "role": "assistant",
+      "content": "8; The response describes the issue and asks for help, aligning well with the intent of troubleshooting."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Ask about financing options for a product, user response: 'Do you have monthly payment plans available?'"
+    },
+    {
+      "role": "assistant",
+      "content": "10; The response directly aligns with the intent of asking about financing options."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Follow up on an order they placed, user response: 'I ordered something last week. Is it on its way?'"
+    },
+    {
+      "role": "assistant",
+      "content": "9; The response mentions the previous order and inquires about its status, matching the intent well."
+    },
+    {
+      "role": "user",
+      "content": "The user is supposed to: Decline an upsell politely, user response: 'No, thank you. I’m happy with my current plan.'"
+    },
+    {
+      "role": "assistant",
+      "content": "10; The response politely declines the upsell, directly matching the intent."
+    }
+  ]

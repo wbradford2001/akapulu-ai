@@ -8,60 +8,150 @@ datasource db {
 }
 
 model User {
-  id             String          @id
-  username       String          @unique
-  email          String          @unique
-  credits        Int             @default(0)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  images         UserToImage[]
-  payments       Payment[]
-  billingDetails BillingDetails?
+  id                   String                @id @default(uuid())
+  email                String                @unique
+
+  profilePicUrl        String?
+  firstName            String
+  lastName             String
+
+  preMadeChatParams    PreMadeChatParam[]
+  chatParamInvocations ChatParamInvocation[]
+  conversationNodes    ConversationNode[]    // One-to-many relationship with ConversationNodes
+
+
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 }
 
-model UserToImage {
-  id             String   @id @default(uuid())
-  userId         String
-  imageId        String
-  prompt         String
-  negativePrompt String?
-  guidanceScale  Float
-  steps          Int
-  createdAt      DateTime @default(now())
+model PreMadeChatParam {
+  id                   String                @id @default(uuid())
+  name                 String                // Name of the pre-made chat param (e.g., "Sales Training")
 
-  user  User  @relation(fields: [userId], references: [id])
-  image Image @relation(fields: [imageId], references: [id])
+  userId               String
+  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete here
+
+  modelParams          Json               
+  customParams         Json
+
+  conversationNodes    ConversationNode[]   @relation("PreMadeChatParamNodes")
+
+  chatParamInvocations ChatParamInvocation[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 }
 
-model Image {
-  id             String   @id @default(uuid())
-  categoryId     String?
-  url            String
-  completionTime Float
-  createdAt      DateTime @default(now())
-  userToImages UserToImage[]
+model ChatParamInvocation {
+  id                   String                @id @default(uuid())
+
+  userId               String
+  user                 User                  @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete here
+
+  preMadeChatParamId   String?
+  preMadeChatParam     PreMadeChatParam?     @relation(fields: [preMadeChatParamId], references: [id], onDelete: Cascade) // Cascade delete here
+
+  conversationNodes    ChatParamInvocationConversationNode[]
+
+  modelParams          Json               
+  customParams         Json
+  
+  transcript           TranscriptRow[]       @relation("ChatParamTranscript")
+
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 }
 
-model Payment {
-  id               String   @id @default(uuid())
-  userId           String
-  amount           Float
-  currency         String
-  creditsPurchased Int
-  status           String
-  createdAt        DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id]) // Relation fixed
+enum Role {
+  user
+  AI
 }
 
-model BillingDetails {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  user            User     @relation(fields: [userId], references: [id])
-  cardType        String
-  cardLastFour    String
-  billingAddress  String
-  nextBillingDate DateTime
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+model TranscriptRow {
+  id                   String                @id @default(uuid())
+  role                 Role
+  content              String
+  chatParamInvocation  ChatParamInvocation   @relation("ChatParamTranscript", fields: [chatParamInvocationId], references: [id], onDelete: Cascade) // Cascade delete here
+  chatParamInvocationId String
+
+  convoNodeId          String?           // Foreign key for the ConversationNode (optional)
+  convoNode            ConversationNode? @relation(fields: [convoNodeId], references: [id], onDelete: Cascade)
+
+  order                Int
+
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+}
+
+
+enum ConversationNodeType {
+  regular
+  options
+  fallback
+}
+
+model ChatParamInvocationConversationNode {
+  chatParamInvocationId String
+  conversationNodeId    String
+
+  chatParamInvocation   ChatParamInvocation @relation(fields: [chatParamInvocationId], references: [id], onDelete: Cascade)
+  conversationNode      ConversationNode    @relation(fields: [conversationNodeId], references: [id], onDelete: Cascade)
+
+  @@id([chatParamInvocationId, conversationNodeId])
+}
+
+model ConversationNode {
+  id                      String    @id @default(uuid()) // Unique identifier for the node
+  role                    Role      // The role of this node (e.g., "user" or "AI")
+
+  nodeType                ConversationNodeType
+
+  aiWordForWord           Boolean?
+  verifySpeech            Boolean?
+
+
+
+  expectedSpeech          String?   // The expected speech for this node (optional)
+  nextName                String?   // name of the next ConversationNode (optional for linked-list traversal)
+  options                 String[]  // Array of IDs for optional next nodes (optional)
+  traverseNumberOfOptions Int?      // Number of options to traverse before proceeding to "next"
+
+  transcriptRows          TranscriptRow[]  // Link to TranscriptRow
+
+  preMadeChatParam       PreMadeChatParam? @relation("PreMadeChatParamNodes", fields: [preMadeChatParamId], references: [id], onDelete: Cascade)
+  preMadeChatParamId     String?  
+
+  chatParamInvocations   ChatParamInvocationConversationNode[]
+
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  ignoreInTranscript      Boolean
+
+  fallbackNodeName        String?
+
+  showVerifyFailPopUp     Boolean? // whether or not you want to alert the user that the verification failed
+
+  threshold               Int // value from 0 - 10 for score to match for user regular input (not used for option nodes)
+
+
+  isStart                 Boolean?   @default(false) // Indicates whether this node is the start of a conversation
+  isEnd                   Boolean?   @default(false) // Indicates whether this node is the end of a conversation
+
+  name                    String  // Name of script, if it's start
+
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @default(now()) @updatedAt
+}
+
+
+// a test run corresponds to an individual file
+model TestRun {
+  id         String   @id // the filename
+  createdAt  DateTime @default(now())
+  duration   Int?     // in milliseconds
+  claudeInputTokens  Int     @default(0)
+  claudeOutputTokens Int     @default(0)
+  openAIInputTokens  Int     @default(0)
+  openAIOutputTokens Int     @default(0)
+  totalCost  Float    @default(0)
 }
